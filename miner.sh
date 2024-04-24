@@ -57,9 +57,9 @@ done
 }
 
 update_sd_miner_command() {
-    #SD_MINER="$(basename $(find /miner-release -type f -name 'sd-miner*.py' -print -quit))"
-    SD_MINER="$(basename $(find / -type f -name 'sd-miner*.py' -path "*/miner-release/*" -print -quit))"
-   
+    #SD_MINER="$(basename $(find / -type f -name 'sd-miner*.py' -path "*/miner-release/*" -print -quit))"
+    SD_MINER="$(basename $(find / -type f -name 'sd-miner*.py' -path "*/miner-release/*" -print -quit 2>/dev/null))"
+
 
     if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
         if [ "$miner_choice" = "1" ]; then
@@ -482,8 +482,8 @@ echo "${GREEN}\n✓ Conda Environment Activated → Cloning Miner-Release Reposi
 git clone https://github.com/heurist-network/miner-release
 echo "${GREEN}\n✓ Miner-Release Repository Cloned → Changing Directory\n${NC}"
 
-
-CONFIG_FILE=$(find / -type f -name "config.toml" -path "*/miner-release/*" -print -quit)
+#Find location of config.toml
+CONFIG_FILE=$(find / -type f -name "config.toml" -path "*/miner-release/*" -print -quit 2>/dev/null)
 
 cd miner-release/
 echo "${GREEN}\n✓ Directory Changed to Miner-Release → Creating .env File\n${NC}"
