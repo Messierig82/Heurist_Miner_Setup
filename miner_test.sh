@@ -306,7 +306,7 @@ echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀�
 }
 
 prompt_evm_addresses() {
-    #sudo apt-get install -y figlet >/dev/null 2>&1
+    # apt-get install -y figlet >/dev/null 2>&1
     # Generate ASCII art
     echo "${GREEN}"
     #generate_ascii_art "Heurist"
@@ -462,8 +462,9 @@ fi
 
 install_stable_diffusion_packages() {
 echo "${GREEN}\n✓Installing packages required for Stable Diffusion\n${NC}"
-sudo apt update && sudo apt upgrade -y
-sudo apt install nano 
+ apt update &&  apt upgrade -y
+ apt install nano 
+ apt install tmux -y
 echo "${GREEN}✓ Packages Updated → Creating New Conda Environment${NC}"
 conda create --name gpu-3-11 python=3.11 -y
 echo "${GREEN}\n✓ New Conda Environment Created → Initializing Conda\n${NC}"
@@ -527,16 +528,16 @@ echo "${GREEN}\nUpdated num_child_process and concurrency_soft_limit in .env fil
 
 install_llm_packages() {
 echo "${GREEN}\nInstalling Packages required for LLM Miner\n${NC}"
-sudo apt update -y && sudo apt install -y jq
+ apt update -y &&  apt install -y jq
 echo "${GREEN}\n✓ jq Installed → Installing bc\n${NC}"
-sudo apt install -y bc
+ apt install -y bc
 
 #echo "${GREEN}\n✓ bc Installed → Updating Packages\n${NC}"
 
-sudo apt update -y && sudo apt upgrade -y && sudo apt install -y software-properties-common && sudo add-apt-repository ppa:deadsnakes/ppa << EOF
+ apt update -y &&  apt upgrade -y &&  apt install -y software-properties-common &&  add-apt-repository ppa:deadsnakes/ppa << EOF
 
 EOF
-sudo apt install -y python3-venv
+ apt install -y python3-venv
 echo "${GREEN}\n✓ Dependencies Installed for LLM Miner\n${NC}"
 }
 
