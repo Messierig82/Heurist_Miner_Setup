@@ -388,7 +388,7 @@ if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
         echo "1.⛏️ Both LLM & SD (Exclude SDL) --( 🦙,🧚‍♀️ ) Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "1" ]; then echo "${BLUE}      💎   Recommended based on system config${NC}"; fi)"
         echo "2.⛏️ Both LLM & SD (Include SDL) --( 🦙,🧚‍♀️,🧚‍♀️ ) Required VRAM of 24GB - 48GB- 48GB$(if [ "$recommended_mining_option" = "2" ]; then echo "${BLUE}      💎   Recommended based on system config${NC}"; fi)"
         echo "3.⛏️ Only LLM Miner --( 🦙 ) Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "3" ]; then echo "${BLUE}      💎  Recommended based on system config${NC}"; fi)"
-        echo "4.⛏️ Only SD Miner  --( 🧚‍♀️🧚‍♀️ ) Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "4" ]; then echo "${BLUE}      💎  Recommended based on system config${NC}"; fi)"
+        echo "4.⛏️ Only SD Miner  --( 🧚‍♀️🧚‍♀️ ) Required VRAM of 12GB$(if [ "$recommended_mining_option" = "4" ]; then echo "${BLUE}      💎  Recommended based on system config${NC}"; fi)"
 
         while true; do
             printf "${ITALICS}${GREEN}\\nEnter your choice (1/2/3/4):${NC} "
