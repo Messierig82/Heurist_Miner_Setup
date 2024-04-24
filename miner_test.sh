@@ -17,7 +17,7 @@ BOTTOM_RIGHT_CORNER="┘"
 #==========================Define Variables=============================================#
 CONDA_ACTIVATE="source activate /opt/conda/envs/gpu-3-11"
 #CONFIG_FILE="/miner-release/config.toml"
-CONFIG_FILE=$(find / -type f -name "config.toml" -path "*/miner-release/*" -print -quit)
+
 SD_MINER=""
 
 #Model Descriptions
@@ -306,7 +306,7 @@ echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀�
 }
 
 prompt_evm_addresses() {
-    # apt-get install -y figlet >/dev/null 2>&1
+    #sudo apt-get install -y figlet >/dev/null 2>&1
     # Generate ASCII art
     echo "${GREEN}"
     #generate_ascii_art "Heurist"
@@ -462,9 +462,8 @@ fi
 
 install_stable_diffusion_packages() {
 echo "${GREEN}\n✓Installing packages required for Stable Diffusion\n${NC}"
- apt update &&  apt upgrade -y
- apt install nano 
-apt install tmux -y
+sudo apt update && sudo apt upgrade -y
+sudo apt install nano 
 echo "${GREEN}✓ Packages Updated → Creating New Conda Environment${NC}"
 conda create --name gpu-3-11 python=3.11 -y
 echo "${GREEN}\n✓ New Conda Environment Created → Initializing Conda\n${NC}"
@@ -477,6 +476,9 @@ echo "${GREEN}\n✓ Conda Environment Activated → Cloning Miner-Release Reposi
 
 git clone https://github.com/heurist-network/miner-release
 echo "${GREEN}\n✓ Miner-Release Repository Cloned → Changing Directory\n${NC}"
+
+
+CONFIG_FILE=$(find / -type f -name "config.toml" -path "*/miner-release/*" -print -quit)
 
 cd miner-release/
 echo "${GREEN}\n✓ Directory Changed to Miner-Release → Creating .env File\n${NC}"
@@ -525,16 +527,16 @@ echo "${GREEN}\nUpdated num_child_process and concurrency_soft_limit in .env fil
 
 install_llm_packages() {
 echo "${GREEN}\nInstalling Packages required for LLM Miner\n${NC}"
- apt update -y &&  apt install -y jq
+sudo apt update -y && sudo apt install -y jq
 echo "${GREEN}\n✓ jq Installed → Installing bc\n${NC}"
- apt install -y bc
+sudo apt install -y bc
 
 #echo "${GREEN}\n✓ bc Installed → Updating Packages\n${NC}"
 
- apt update -y &&  apt upgrade -y &&  apt install -y software-properties-common &&  add-apt-repository ppa:deadsnakes/ppa << EOF
+sudo apt update -y && sudo apt upgrade -y && sudo apt install -y software-properties-common && sudo add-apt-repository ppa:deadsnakes/ppa << EOF
 
 EOF
- apt install -y python3-venv
+sudo apt install -y python3-venv
 echo "${GREEN}\n✓ Dependencies Installed for LLM Miner\n${NC}"
 }
 
