@@ -11,7 +11,7 @@ This script is designed to automate the setup and configuration of LLM (Language
 * Modifies the config.toml file with the num_cuda_devices parameter based on the number of GPUs detected.
 * Ability to update num_child_process, concurrency_soft_limit is auto updated to num_child_process+10 in config.toml.
 * Starts the miners in separate tmux panes within a single window for easy monitoring and management.
-* When both LLM and SD models are selected, each GPU's LLM Model will wait for LLM mining to start on the previous GPU (Current GPU - 1), after which SD mining will begin once all LLM miners are running
+* When both LLM and SD models are selected, each GPU's LLM Model will wait for LLM mining to start on the previous GPU (Current GPU - 1), after which SD mining will begin once all LLM miners are running. ( To avoid failures for LLM mining )
 * Waiting for subsequent TMUX panes is achieved via referring the generated log files from LLM miners.
 * Update .tmux.conf with alias to monitor tmux sessions 
 * Update bashrc file to enable vi mode & mouse scroll mode in TMUX sessions.
@@ -61,11 +61,22 @@ The script currently does not recommend modifying these parameters
 * If the script fails to detect the number of GPUs or VRAM correctly, ensure that the NVIDIA driver is properly installed and accessible.
 * If the script encounters any errors during the installation or setup process, review the error messages and ensure that the system meets the prerequisites.
 
+**sh miner.sh**
 ![1](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/5c59ff99-9e15-407f-9ff8-ca741783afb8)
+
+**Manual setup**
 ![2](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/0499ae0d-9f09-4531-9205-78a6fa9ceeb0)
+
+**System Recommended**
 ![4](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/501c0da2-36d0-4fab-b71e-7f375e4255ba)
+
+**TMUX pane 1 executing LLM miner while pane 2 & 3 wait for LLM to start**
 ![5](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/d2d85237-bb87-4712-9792-22c7bee19d79)
+
+**LLM Pane 2 Starts once it finds the keyword LLM Miner started on Tmux pane 1**
 ![6](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/49ddcb0b-8b57-4c5a-a620-c7e916a3f849)
+
+**SD miner Pane 3 Starts once it finds the keyword LLM Miner started on Tmux pane 2**
 ![7](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/18102a74-0a8b-47cd-8250-99918302189a)
 
 
