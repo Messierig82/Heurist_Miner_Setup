@@ -465,6 +465,7 @@ echo "${GREEN}\n✓Installing packages required for Stable Diffusion\n${NC}"
  apt update &&  apt upgrade -y
  apt install nano 
  apt install tmux -y
+ apt install curl -y
  apt install wget
 echo "${GREEN}✓ Packages Updated → Creating New Conda Environment${NC}"
 conda create --name gpu-3-11 python=3.11 -y
