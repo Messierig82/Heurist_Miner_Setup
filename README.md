@@ -1,6 +1,6 @@
 **Heurist AI Mining Script**
 
-This script is designed to automate the setup and configuration of LLM (Language Model) and SD (Stable Diffusion) miners for the Heurist AI mining platform. It provides a user-friendly interface to guide users through the process of setting up their mining environment based on their system configuration.
+This script is designed to automate the setup and configuration of LLM (Language Model) and SD (Stable Diffusion) miners for Heurist AI. It provides a user-friendly interface to guide users through the process of setting up their mining environment based on their system configuration.
 
 **Features**
 * Recommends the optimal mining setup based on the system configuration.
