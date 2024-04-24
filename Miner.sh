@@ -16,7 +16,8 @@ BOTTOM_RIGHT_CORNER="┘"
 
 #==========================Define Variables=============================================#
 CONDA_ACTIVATE="source activate /opt/conda/envs/gpu-3-11"
-CONFIG_FILE="/miner-release/config.toml"
+#CONFIG_FILE="/miner-release/config.toml"
+
 SD_MINER=""
 
 #Model Descriptions
@@ -56,24 +57,26 @@ done
 }
 
 update_sd_miner_command() {
-    SD_MINER="$(basename $(find /miner-release -type f -name 'sd-miner*.py' -print -quit))"
+    #SD_MINER="$(basename $(find /miner-release -type f -name 'sd-miner*.py' -print -quit))"
+    SD_MINER="$(basename $(find / -type f -name 'sd-miner*.py' -path "*/miner-release/*" -print -quit))"
+   
 
     if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
         if [ "$miner_choice" = "1" ]; then
-            echo "Selected LLM Miner & SD-Miner (Exclude SDL)"
+            echo "Selected LLM Miner & SD-Miner (Exclude SDXL)"
             sd_miner_command="yes | python3 $(eval echo "$SD_MINER") --log-level DEBUG --exclude-sdxl"
         elif [ "$miner_choice" = "2" ] || [ "$miner_choice" = "4" ]; then
-            echo "Selected LLM Miner & SD-Miner (Include SDL)"
+            echo "Selected LLM Miner & SD-Miner (Include SDXL)"
             sd_miner_command="yes | python3 $(eval echo "$SD_MINER") --log-level DEBUG"
         fi
     fi
 
     if [ "$user_choice" = "y" ] || [ "$user_choice" = "Y" ]; then
         if [ "$recommended_mining_option" = "1" ]; then
-            echo "Selected LLM Miner & SD-Miner (Exclude SDL)"
+            echo "Selected LLM Miner & SD-Miner (Exclude SDXL)"
             rec_sd_miner_cmd="yes | python3 $(eval echo "$SD_MINER") --log-level DEBUG --exclude-sdxl"
         elif [ "$recommended_mining_option" = "2" ] || [ "$recommended_mining_option" = "4" ]; then
-            echo "Selected LLM Miner & SD-Miner (Include SDL)"
+            echo "Selected LLM Miner & SD-Miner (Include SDXL)"
             rec_sd_miner_cmd="yes | python3 $(eval echo "$SD_MINER") --log-level DEBUG"
         fi
     fi
@@ -119,9 +122,9 @@ print_multiplier_table() {
     
     # Determine the waifu multiplier based on the recommended_mining_option
     if [ "$recommended_mining_option" = "1" ]; then
-        waifu_multiplier="1X Reward 🧚‍♀️"
+        waifu_multiplier="0.5X Reward 🧚‍♀️"
     elif [ "$recommended_mining_option" = "2" ] || [ "$recommended_mining_option" = "4" ]; then
-        waifu_multiplier="2X Reward 🧚‍♀️,🧚‍♀️"
+        waifu_multiplier="1X Reward 🧚‍♀️"
     fi
     
     local llm_model_length=$((${#llm_model} + 10))
@@ -303,7 +306,7 @@ echo "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀�
 }
 
 prompt_evm_addresses() {
-    #sudo apt-get install -y figlet >/dev/null 2>&1
+    # apt-get install -y figlet >/dev/null 2>&1
     # Generate ASCII art
     echo "${GREEN}"
     #generate_ascii_art "Heurist"
@@ -316,7 +319,7 @@ prompt_evm_addresses() {
         printf "${GREEN}\\n%s\\n${NC}" "$heurist_ascii_art"
         printf "${BLUE}Your System Configuration is:\\n${NC}"
         print_table "$gpu_model" "$num_gpus" "$vram_info"
-        printf "${BLUE}\\n\\nBased on the System Configuration, The Recommended models to run are:\\n${NC}"
+        printf "${BLUE}\\n\\nRecommended Model Choice based on Available VRAM, Maximizing Llama and Waifu Points:\\n${NC}"
         printf "${GREEN}\\n${NC}"
         print_multiplier_table "$rec_llm_model" "$rec_sd_model"
         printf "${ITALICS}${GREEN}\\nPress 'Y' to continue with the recommended miner setup, Press 'N' to choose setup manually:${NC} "
@@ -382,10 +385,10 @@ prompt_evm_addresses() {
 prompt_miner_config() {
 if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
         echo "${GREEN}\\nChoose the appropriate miners you want to run\\n${NC}"
-        echo "1.⛏️ Both LLM & SD (Exclude SDL) --( 🦙,🧚‍♀️ ) Minimum Required VRAM of 24GB$(if [ "$recommended_mining_option" = "1" ]; then echo "${BLUE} --> 💎   Recommended based on system config${NC}"; fi)"
-        echo "2.⛏️ Both LLM & SD (Include SDL) --( 🦙,🧚‍♀️,🧚‍♀️ ) Minimum Required VRAM of 24GB- 48GB$(if [ "$recommended_mining_option" = "2" ]; then echo "${BLUE} --> 💎   Recommended based on system config${NC}"; fi)"
-        echo "3.⛏️ Only LLM Miner --( 🦙 ) Minimum Required VRAM of 12GB$(if [ "$recommended_mining_option" = "3" ]; then echo "${BLUE} --> 💎  Recommended based on system config${NC}"; fi)"
-        echo "4.⛏️ Only SD Miner  --( 🧚‍♀️🧚‍♀️ ) Minimum Required VRAM of 12GB$(if [ "$recommended_mining_option" = "4" ]; then echo "${BLUE} --> 💎  Recommended based on system config${NC}"; fi)"
+        echo "1.⛏️ Both LLM & SD  ( Exclude SDXL-0.5X Waifu )   ( 🦙,🧚‍♀️ )       Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "1" ]; then echo "   ${BLUE}         💎 Recommended based on available VRAM${NC}"; fi)"
+        echo "2.⛏️ Both LLM & SD  ( Include SDXL -1X Waifu  )   ( 🦙,🧚‍♀️ )       Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "2" ]; then echo "   ${BLUE}         💎 Recommended based on available VRAM${NC}"; fi)"
+        echo "3.⛏️ Only LLM Miner                               (  🦙   )       Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "3" ]; then echo "   ${BLUE}         💎 Recommended based on available VRAM${NC}"; fi)"
+        echo "4.⛏️ Only SD Miner  ( Include SDXL -1X Waifu )    (  🧚‍♀️  )       Required VRAM of 12GB$(if [ "$recommended_mining_option" = "4" ]; then        echo "    ${BLUE}         💎 Recommended based on available VRAM${NC}"; fi)"
 
         while true; do
             printf "${ITALICS}${GREEN}\\nEnter your choice (1/2/3/4):${NC} "
@@ -399,10 +402,10 @@ done
 
 if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
         echo "${GREEN}\\n\\nWhich LLM Miner model do you want to run?\\n${NC}"
-        echo "1. openhermes-2.5-mistral-7b-gptq (8 Bit-12GB RAM  0.1X Reward 🦙 )$(if [ "$recommended_llm_model" = "1" ]; then echo "${BLUE} --> 💎  Recommended based on system config${NC}"; fi)"
-        echo "2. openhermes-2-pro-mistral-7b (16-Bit-24GB RAM  0.2X Reward 🦙,🦙 )$(if [ "$recommended_llm_model" = "2" ]; then echo "${BLUE} --> 💎 Recommended based on system config${NC}"; fi)"
-        echo "3. openhermes-mixtral-8x7b-gptq(4 Bit-48GB RAM 1x Reward  🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "3" ]; then echo "${BLUE} --> 💎  Recommended based on system config${NC}"; fi)"
-        echo "4. openhermes-2-yi-34b-gptq (8 Bit- 48GB RAM 1X Reward  🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "4" ]; then echo "${BLUE} --> 💎  Recommended based on system config${NC}"; fi)"
+        echo "1. openhermes-2.5-mistral-7b-gptq      (8 Bit)       12GB RAM     0.1X Reward  ( 🦙 )$(if [ "$recommended_llm_model" = "1" ]; then echo "                ${BLUE}     💎  Recommended based on available VRAM${NC}"; fi)"
+        echo "2. openhermes-2-pro-mistral-7b         (16-Bit)      24GB RAM     0.2X Reward  ( 🦙,🦙 )$(if [ "$recommended_llm_model" = "2" ]; then echo "             ${BLUE}     💎 Recommended based on available VRAM${NC}"; fi)"
+        echo "3. openhermes-mixtral-8x7b-gptq        (4 Bit)       48GB RAM     1x Reward    ( 🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "3" ]; then echo "${BLUE}   💎  Recommended based on available VRAM${NC}"; fi)"
+        echo "4. openhermes-2-yi-34b-gptq            (8 Bit)       48GB RAM     1X Reward    ( 🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "4" ]; then echo "${BLUE}   💎  Recommended based on available VRAM${NC}"; fi)"
 
         while true; do
             printf "${ITALICS}${GREEN}\\nEnter your choice (1/2/3/4):${NC} "
@@ -423,7 +426,7 @@ if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" =
     fi
 
     if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
-    printf "${ITALICS}${GREEN}\\nIf you want to modify Child Processes, please enter the number, Press Enter to retain the default value\\n${NC}"
+    printf "${ITALICS}${GREEN}\\nIf you want to modify Child Processes, please enter the number, Press Enter to retain the default value: ${NC}"
     read num_child_process
     fi
     
@@ -453,13 +456,19 @@ else
                     fi)"${NC}
 
     sleep 5
-    num_child_process=25
+    num_child_process=20
 fi
 }
 
 install_stable_diffusion_packages() {
 echo "${GREEN}\n✓Installing packages required for Stable Diffusion\n${NC}"
-sudo apt update && sudo apt upgrade -y
+ apt update &&  apt upgrade -y
+ apt install nano 
+ apt install tmux -y
+ apt install curl -y
+ #apt-get install python3.8-venv
+ python3 --version | awk -F'[ .]' '{if ($2 < 3 || ($2 == 3 && $3 < 9)) system("apt-get install -y python3.8-venv")}'
+ apt install wget
 echo "${GREEN}✓ Packages Updated → Creating New Conda Environment${NC}"
 conda create --name gpu-3-11 python=3.11 -y
 echo "${GREEN}\n✓ New Conda Environment Created → Initializing Conda\n${NC}"
@@ -472,6 +481,9 @@ echo "${GREEN}\n✓ Conda Environment Activated → Cloning Miner-Release Reposi
 
 git clone https://github.com/heurist-network/miner-release
 echo "${GREEN}\n✓ Miner-Release Repository Cloned → Changing Directory\n${NC}"
+
+
+CONFIG_FILE=$(find / -type f -name "config.toml" -path "*/miner-release/*" -print -quit)
 
 cd miner-release/
 echo "${GREEN}\n✓ Directory Changed to Miner-Release → Creating .env File\n${NC}"
@@ -520,16 +532,16 @@ echo "${GREEN}\nUpdated num_child_process and concurrency_soft_limit in .env fil
 
 install_llm_packages() {
 echo "${GREEN}\nInstalling Packages required for LLM Miner\n${NC}"
-sudo apt update -y && sudo apt install -y jq
+ apt update -y &&  apt install -y jq
 echo "${GREEN}\n✓ jq Installed → Installing bc\n${NC}"
-sudo apt install -y bc
+ apt install -y bc
 
 #echo "${GREEN}\n✓ bc Installed → Updating Packages\n${NC}"
 
-sudo apt update -y && sudo apt upgrade -y && sudo apt install -y software-properties-common && sudo add-apt-repository ppa:deadsnakes/ppa << EOF
+ apt update -y &&  apt upgrade -y &&  apt install -y software-properties-common &&  add-apt-repository ppa:deadsnakes/ppa << EOF
 
 EOF
-sudo apt install -y python3-venv
+ apt install -y python3-venv
 echo "${GREEN}\n✓ Dependencies Installed for LLM Miner\n${NC}"
 }
 
@@ -703,4 +715,3 @@ run_miners
 
 #Restart bash to update bashrc
 exec bash
-
