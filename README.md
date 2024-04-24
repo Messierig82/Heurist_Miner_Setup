@@ -53,11 +53,21 @@ Note: Recommended choices in the script are based on vram requirements from LLM_
 
 **Variables**
 The script currently does not recommend modifying these parameters
-* CONDA_ACTIVATE: The command to activate the conda environment.
+* openhermes-2-yi-34b-gptq_active_ind: Currently set to n, you can still select this, it will not come up in recommended setup
 * CONFIG_FILE: The path to the miner configuration file.
 * Llama_ratio and SD_ratio: The point weightage for Llama and Waifu models.
 
 **Troubleshooting**
 * If the script fails to detect the number of GPUs or VRAM correctly, ensure that the NVIDIA driver is properly installed and accessible.
 * If the script encounters any errors during the installation or setup process, review the error messages and ensure that the system meets the prerequisites.
+
+![1](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/5c59ff99-9e15-407f-9ff8-ca741783afb8)
+![2](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/0499ae0d-9f09-4531-9205-78a6fa9ceeb0)
+![4](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/501c0da2-36d0-4fab-b71e-7f375e4255ba)
+![5](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/d2d85237-bb87-4712-9792-22c7bee19d79)
+![6](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/49ddcb0b-8b57-4c5a-a620-c7e916a3f849)
+![7](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/18102a74-0a8b-47cd-8250-99918302189a)
+
+
+
 
