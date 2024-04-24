@@ -54,7 +54,7 @@ Note: Recommended choices in the script are based on vram requirements from LLM_
 **Variables**
 The script currently does not recommend modifying these parameters
 * openhermes-2-yi-34b-gptq_active_ind: Currently set to n, you can still select this, it will not come up in recommended setup
-* Llama_ratio and SD_ratio: The point weightage for Llama and Waifu models. Currently set at 70:30 , this is just used to recommend models based on your configuration giving weightage to Llama points than waifu points. No body knows what the multiplier is.
+* Llama_ratio and SD_ratio: The point weightage for Llama and Waifu models. Currently set at 70:30 , this is just used to recommend models based on your configuration giving weightage to Llama points than waifu points. Nobody knows what the multiplier is.
 
 **Troubleshooting**
 * If the script fails to detect the number of GPUs or VRAM correctly, ensure that the NVIDIA driver is properly installed and accessible.
