@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 set -e
 
 # Define color variables
@@ -380,10 +380,11 @@ prompt_evm_addresses() {
             fi
         done
     fi
+
 }
 
 prompt_miner_config() {
-if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
+    if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
         echo "${GREEN}\\nChoose the appropriate miners you want to run\\n${NC}"
         echo "1.⛏️ Both LLM & SD  ( Exclude SDXL-0.5X Waifu )   ( 🦙,🧚‍♀️ )       Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "1" ]; then echo "   ${BLUE}         💎 Recommended based on available VRAM${NC}"; fi)"
         echo "2.⛏️ Both LLM & SD  ( Include SDXL -1X Waifu  )   ( 🦙,🧚‍♀️ )       Required VRAM of 24GB - 48GB$(if [ "$recommended_mining_option" = "2" ]; then echo "   ${BLUE}         💎 Recommended based on available VRAM${NC}"; fi)"
@@ -394,70 +395,88 @@ if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
             printf "${ITALICS}${GREEN}\\nEnter your choice (1/2/3/4):${NC} "
             read miner_choice
             if [ "$miner_choice" != "1" ] && [ "$miner_choice" != "2" ] && [ "$miner_choice" != "3" ] && [ "$miner_choice" != "4" ]; then
-echo "${RED}Invalid choice. Please enter 1, 2, 3, or 4.${NC}"
-else
-break
-fi
-done
-
-if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
-        echo "${GREEN}\\n\\nWhich LLM Miner model do you want to run?\\n${NC}"
-        echo "1. openhermes-2.5-mistral-7b-gptq      (8 Bit)       12GB RAM     0.1X Reward  ( 🦙 )$(if [ "$recommended_llm_model" = "1" ]; then echo "                ${BLUE}     💎  Recommended based on available VRAM${NC}"; fi)"
-        echo "2. openhermes-2-pro-mistral-7b         (16-Bit)      24GB RAM     0.2X Reward  ( 🦙,🦙 )$(if [ "$recommended_llm_model" = "2" ]; then echo "             ${BLUE}     💎 Recommended based on available VRAM${NC}"; fi)"
-        echo "3. openhermes-mixtral-8x7b-gptq        (4 Bit)       48GB RAM     1x Reward    ( 🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "3" ]; then echo "${BLUE}   💎  Recommended based on available VRAM${NC}"; fi)"
-        echo "4. openhermes-2-yi-34b-gptq            (8 Bit)       48GB RAM     1X Reward    ( 🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "4" ]; then echo "${BLUE}   💎  Recommended based on available VRAM${NC}"; fi)"
-
-        while true; do
-            printf "${ITALICS}${GREEN}\\nEnter your choice (1/2/3/4):${NC} "
-            read llm_model_choice
-            if [ "$llm_model_choice" != "1" ] && [ "$llm_model_choice" != "2" ] && [ "$llm_model_choice" != "3" ] && [ "$llm_model_choice" != "4" ]; then
                 echo "${RED}Invalid choice. Please enter 1, 2, 3, or 4.${NC}"
             else
                 break
             fi
         done
 
-        case $llm_model_choice in
-            1) llm_miner_command="./llm-miner-starter.sh openhermes-2.5-mistral-7b-gptq" ;;
-            2) llm_miner_command="./llm-miner-starter.sh openhermes-2-pro-mistral-7b" ;;
-            3) llm_miner_command="./llm-miner-starter.sh openhermes-mixtral-8x7b-gptq" ;;
-            4) llm_miner_command="./llm-miner-starter.sh openhermes-2-yi-34b-gptq" ;;
-        esac
-    fi
+        if [ "$miner_choice" = "4" ]; then
+            while true; do
+                printf "${ITALICS}${GREEN}\\nDo you want to run multiple SD miners on each GPU? Enter the number of miners per GPU (default is 1): ${NC}"
+                read num_sd_miners
+                if [ -z "$num_sd_miners" ]; then
+                    num_sd_miners=1
+                    break
+                elif ! [ "$num_sd_miners" -ge 0 ] 2>/dev/null; then
+                    echo "${RED}Invalid input. Please enter a valid number.${NC}"
+                else
+                    break
+                fi
+            done
+        fi
 
-    if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
-    printf "${ITALICS}${GREEN}\\nIf you want to modify Child Processes, please enter the number, Press Enter to retain the default value: ${NC}"
-    read num_child_process
-    fi
-    
-else
-    echo "${GREEN}\\nYou have a $gpu_model with $num_gpus GPUs and $vram_info RAM.${NC}"
-    echo "${GREEN}\\nBased on the system resources:Executing $(if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ]; then
-                        case "$rec_llm_miner_cmd" in
-                            "./llm-miner-starter.sh openhermes-2.5-mistral-7b-gptq")
-                                echo "$llm_1"
-                                ;;
-                            "./llm-miner-starter.sh openhermes-2-pro-mistral-7b")
-                                echo "$llm_2"
-                                ;;
-                            "./llm-miner-starter.sh openhermes-mixtral-8x7b-gptq")
-                                echo "$llm_3"
-                                ;;
-                            "./llm-miner-starter.sh openhermes-2-yi-34b-gptq")
-                                echo "$llm_4"
-                                ;;
-                        esac
-                        echo "on $num_gpus GPU's followed by"
-                    fi) \
-                    $(if [ "$recommended_mining_option" = "1" ]; then
-                        echo "$sdm_sdxl"
-                    elif [ "$recommended_mining_option" = "2" ] || [ "$recommended_mining_option" = "4" ]; then
-                        echo "$sdm"
-                    fi)"${NC}
+        if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
+            echo "${GREEN}\\n\\nWhich LLM Miner model do you want to run?\\n${NC}"
+            echo "1. openhermes-2.5-mistral-7b-gptq      (8 Bit)       12GB RAM     0.1X Reward  ( 🦙 )$(if [ "$recommended_llm_model" = "1" ]; then echo "                ${BLUE}     💎  Recommended based on available VRAM${NC}"; fi)"
+            echo "2. openhermes-2-pro-mistral-7b         (16-Bit)      24GB RAM     0.2X Reward  ( 🦙,🦙 )$(if [ "$recommended_llm_model" = "2" ]; then echo "             ${BLUE}     💎 Recommended based on available VRAM${NC}"; fi)"
+            echo "3. openhermes-mixtral-8x7b-gptq        (4 Bit)       48GB RAM     1x Reward    ( 🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "3" ]; then echo "${BLUE}   💎  Recommended based on available VRAM${NC}"; fi)"
+            echo "4. openhermes-2-yi-34b-gptq            (8 Bit)       48GB RAM     1X Reward    ( 🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙,🦙 )$(if [ "$recommended_llm_model" = "4" ]; then echo "${BLUE}   💎  Recommended based on available VRAM${NC}"; fi)"
 
-    sleep 5
-    num_child_process=20
-fi
+            while true; do
+                printf "${ITALICS}${GREEN}\\nEnter your choice (1/2/3/4):${NC} "
+                read llm_model_choice
+                if [ "$llm_model_choice" != "1" ] && [ "$llm_model_choice" != "2" ] && [ "$llm_model_choice" != "3" ] && [ "$llm_model_choice" != "4" ]; then
+                    echo "${RED}Invalid choice. Please enter 1, 2, 3, or 4.${NC}"
+                else
+                    break
+                fi
+            done
+
+            case $llm_model_choice in
+                1) llm_miner_command="./llm-miner-starter.sh openhermes-2.5-mistral-7b-gptq" ;;
+                2) llm_miner_command="./llm-miner-starter.sh openhermes-2-pro-mistral-7b" ;;
+                3) llm_miner_command="./llm-miner-starter.sh openhermes-mixtral-8x7b-gptq" ;;
+                4) llm_miner_command="./llm-miner-starter.sh openhermes-2-yi-34b-gptq" ;;
+            esac
+        fi
+
+        if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
+            printf "${ITALICS}${GREEN}\\nIf you want to modify Child Processes, please enter the number, Press Enter to retain the default value: ${NC}"
+            read num_child_process
+        fi
+    else
+        echo "${GREEN}\\nYou have a $gpu_model with $num_gpus GPUs and $vram_info RAM.${NC}"
+        echo "${GREEN}\\nBased on the system resources:Executing $(if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ]; then
+                            case "$rec_llm_miner_cmd" in
+                                "./llm-miner-starter.sh openhermes-2.5-mistral-7b-gptq")
+                                    echo "$llm_1"
+                                    ;;
+                                "./llm-miner-starter.sh openhermes-2-pro-mistral-7b")
+                                    echo "$llm_2"
+                                    ;;
+                                "./llm-miner-starter.sh openhermes-mixtral-8x7b-gptq")
+                                    echo "$llm_3"
+                                    ;;
+                                "./llm-miner-starter.sh openhermes-2-yi-34b-gptq")
+                                    echo "$llm_4"
+                                    ;;
+                            esac
+                            echo "on $num_gpus GPU's followed by"
+                        fi) \
+                        $(if [ "$recommended_mining_option" = "1" ]; then
+                            echo "$sdm_sdxl"
+                        elif [ "$recommended_mining_option" = "2" ] || [ "$recommended_mining_option" = "4" ]; then
+                            echo "$sdm"
+                        fi)"${NC}
+
+        if [ "$recommended_mining_option" = "4" ]; then
+            num_sd_miners=$((vram_per_gpu / 6))
+        fi
+
+        sleep 5
+        num_child_process=20
+    fi
 }
 
 install_stable_diffusion_packages() {
@@ -517,6 +536,16 @@ else
     echo "MINER_ID_0=$evm_address" >> .env
 fi
 
+    # Read miner IDs from .env file
+while IFS='=' read -r key value; do
+    case "$key" in
+        "MINER_ID_0")
+            address_0="$value"
+            ;;
+        # Add more cases for additional miner IDs if needed
+    esac
+done < ".env"
+
 echo "${GREEN}\n✓ .env File Updated with EVM_Address → Installing Requirements\n${NC}"
 
 yes | pip install -r requirements.txt
@@ -547,25 +576,6 @@ echo "${GREEN}\n✓ Dependencies Installed for LLM Miner\n${NC}"
 
 run_miners() {
     tmux new-session -d -s miner_monitor
-
-    max_panes=0
-    if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
-        if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ]; then
-            max_panes=$((num_gpus + 1))
-        elif [ "$miner_choice" = "3" ]; then
-            max_panes=$num_gpus
-        elif [ "$miner_choice" = "4" ]; then
-            max_panes=1
-        fi
-    else
-        if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ]; then
-            max_panes=$((num_gpus + 1))
-        elif [ "$recommended_mining_option" = "3" ]; then
-            max_panes=$num_gpus
-        elif [ "$recommended_mining_option" = "4" ]; then
-            max_panes=1
-        fi
-    fi
 
     if [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
         if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ]; then
@@ -611,8 +621,25 @@ run_miners() {
                 tmux send-keys -t miner_monitor.$((last_pane_index)) "$sd_miner_command" C-m
             fi
         elif [ "$miner_choice" = "4" ]; then
-            tmux send-keys -t miner_monitor "$CONDA_ACTIVATE" C-m
-            tmux send-keys -t miner_monitor "$sd_miner_command" C-m
+            miner_id_0="${address_0}"
+            gpu_uuid_0=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' '$1 == 0 {print substr($2, 5, 6)}')
+            log_file="sd-miner_0_${miner_id_0}-${gpu_uuid_0}.log"
+    
+            for i in $(seq 1 $((num_sd_miners * num_gpus))); do
+            if [ "$i" -eq 1 ]; then
+                tmux send-keys -t miner_monitor "$CONDA_ACTIVATE" C-m
+                tmux send-keys -t miner_monitor "$sd_miner_command" C-m
+            else
+                tmux split-window -v -t miner_monitor
+                tmux select-layout -t miner_monitor tiled
+
+                tmux send-keys -t miner_monitor.$((i-1)) "while true; do if [ -f \"$log_file\" ]; then if grep -q '.*Default model .* loaded successfully.*' \"$log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "clear;echo 'Waiting for SD Miner to start in GPU 0...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "echo 'SD Miner started in GPU 0. Starting SD Miner $i...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "$CONDA_ACTIVATE" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "$sd_miner_command" C-m
+            fi
+            done
         fi
     else
         if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ] || [ "$recommended_mining_option" = "3" ]; then
@@ -620,50 +647,64 @@ run_miners() {
                 gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' -v idx="$i" '$1 == idx {print substr($2, 5, 6)}')
                 miner_id=$(eval echo "\$address_$i")
                 log_file="llm-miner_${miner_id}-${gpu_uuid}.log"
+if [ "$i" -eq 0 ]; then
+            tmux send-keys -t miner_monitor "$rec_llm_miner_cmd --miner-id-index $i --port 800$i --gpu-ids $i"C-m
+else
+            tmux split-window -v -t miner_monitor
+            tmux select-layout -t miner_monitor tiled
+            prev_gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' -v idx="$((i-1))" '$1 == idx {print substr($2, 5, 6)}')
+            prev_miner_id=$(eval echo "$address_$((i-1))")
+            prev_log_file="llm-miner_${prev_miner_id}-${prev_gpu_uuid}.log"
+            tmux send-keys -t miner_monitor.$((i)) "while true; do if [ -f \"$prev_log_file\" ]; then if grep -q '.*LLM miner started.*' \"$prev_log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
+            tmux send-keys -t miner_monitor.$((i)) "clear;echo 'Waiting for LLM to start in GPU $((i-1))...'" C-m
+            tmux send-keys -t miner_monitor.$((i)) "echo 'LLM started in GPU $((i-1)). Starting LLM in GPU $i...'" C-m
+            tmux send-keys -t miner_monitor.$((i)) "$rec_llm_miner_cmd --miner-id-index $i --port 800$i --gpu-ids $i" C-m
+fi
+            pane_index=$((pane_index + 1))
+done
 
-                if [ "$i" -eq 0 ]; then
-                    tmux send-keys -t miner_monitor "$rec_llm_miner_cmd --miner-id-index $i --port 800$i --gpu-ids $i" C-m
-                else
-                    tmux split-window -v -t miner_monitor
-                    tmux select-layout -t miner_monitor tiled
-                    prev_gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' -v idx="$((i-1))" '$1 == idx {print substr($2, 5, 6)}')
-                    prev_miner_id=$(eval echo "\$address_$((i-1))")
-                    prev_log_file="llm-miner_${prev_miner_id}-${prev_gpu_uuid}.log"
+if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ]; then
+            tmux split-window -v -t miner_monitor
+            tmux select-layout -t miner_monitor tiled
+            last_pane_index=$num_gpus
+            if [ "$num_gpus" -eq 1 ]; then
+                gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' '$1 == 0 {print substr($2, 5, 6)}')
+                miner_id="$evm_address"
+            else
+                gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' -v idx="$((last_pane_index-1))" '$1 == idx {print substr($2, 5, 6)}')
+                miner_id=$(eval echo "\$address_$((last_pane_index-1))")
+            fi
+            log_file="llm-miner_${miner_id}-${gpu_uuid}.log"
 
-                    tmux send-keys -t miner_monitor.$((i)) "while true; do if [ -f \"$prev_log_file\" ]; then if grep -q '.*LLM miner started.*' \"$prev_log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
-                    tmux send-keys -t miner_monitor.$((i)) "clear;echo 'Waiting for LLM to start in GPU $((i-1))...'" C-m
-                    tmux send-keys -t miner_monitor.$((i)) "echo 'LLM started in GPU $((i-1)). Starting LLM in GPU $i...'" C-m
-                    tmux send-keys -t miner_monitor.$((i)) "$rec_llm_miner_cmd --miner-id-index $i --port 800$i --gpu-ids $i" C-m
-                fi
-                pane_index=$((pane_index + 1))
-            done
-
-            if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ]; then
+            tmux send-keys -t miner_monitor.$((last_pane_index)) "while true; do if [ -f \"$log_file\" ]; then if grep -q '.*LLM miner started.*' \"$log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
+            tmux send-keys -t miner_monitor.$((last_pane_index)) "clear;echo 'Waiting for LLM to start in GPU $((last_pane_index-1))...'" C-m
+            tmux send-keys -t miner_monitor.$((last_pane_index)) "echo 'LLM started in GPU $((last_pane_index-1)). Starting SD Miner...'" C-m
+            tmux send-keys -t miner_monitor.$((last_pane_index)) "$CONDA_ACTIVATE" C-m
+            tmux send-keys -t miner_monitor.$((last_pane_index)) "$rec_sd_miner_cmd" C-m
+fi
+    elif [ "$recommended_mining_option" = "4" ]; then
+        for i in $(seq 1 $((num_sd_miners * num_gpus))); do
+            if [ "$i" -eq 1 ]; then
+                tmux send-keys -t miner_monitor "$CONDA_ACTIVATE" C-m
+                tmux send-keys -t miner_monitor "$rec_sd_miner_cmd" C-m
+            else
                 tmux split-window -v -t miner_monitor
                 tmux select-layout -t miner_monitor tiled
-                last_pane_index=$num_gpus
-                if [ "$num_gpus" -eq 1 ]; then
-                    gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' '$1 == 0 {print substr($2, 5, 6)}')
-                    miner_id="$evm_address"
-                else
-                    gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' -v idx="$((last_pane_index-1))" '$1 == idx {print substr($2, 5, 6)}')
-                    miner_id=$(eval echo "\$address_$((last_pane_index-1))")
-                fi
-                log_file="llm-miner_${miner_id}-${gpu_uuid}.log"
+                gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' '$1 == 0 {print substr($2, 5, 6)}')
+                miner_id_0="${address_0}"
+                log_file="sd-miner_0_${miner_id_0}-${gpu_uuid}.log"
 
-                tmux send-keys -t miner_monitor.$((last_pane_index)) "while true; do if [ -f \"$log_file\" ]; then if grep -q '.*LLM miner started.*' \"$log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
-                tmux send-keys -t miner_monitor.$((last_pane_index)) "clear;echo 'Waiting for LLM to start in GPU $((last_pane_index-1))...'" C-m
-                tmux send-keys -t miner_monitor.$((last_pane_index)) "echo 'LLM started in GPU $((last_pane_index-1)). Starting SD Miner...'" C-m
-                tmux send-keys -t miner_monitor.$((last_pane_index)) "$CONDA_ACTIVATE" C-m
-                tmux send-keys -t miner_monitor.$((last_pane_index)) "$rec_sd_miner_cmd" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "while true; do if [ -f \"$log_file\" ]; then if grep -q '.*Default model .* loaded successfully.*' \"$log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "clear;echo 'Waiting for SD Miner to start in GPU 0...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "echo 'SD Miner started in GPU 0. Starting SD Miner $i...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "$CONDA_ACTIVATE" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "$rec_sd_miner_cmd" C-m
             fi
-        elif [ "$recommended_mining_option" = "4" ]; then
-            tmux send-keys -t miner_monitor "$CONDA_ACTIVATE" C-m
-            tmux send-keys -t miner_monitor "$rec_sd_miner_cmd" C-m
-        fi
+        done
     fi
+fi
 
-    tmux attach-session -t miner_monitor
+tmux attach-session -t miner_monitor
 }
 
 
