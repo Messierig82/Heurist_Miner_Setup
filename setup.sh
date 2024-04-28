@@ -401,9 +401,12 @@ prompt_miner_config() {
             fi
         done
 
+
         if [ "$miner_choice" = "4" ]; then
             while true; do
-                printf "${ITALICS}${GREEN}\\nDo you want to run multiple SD miners on each GPU? Enter the number of miners per GPU (default is 1): ${NC}"
+                rec_num_sd_miners=$(printf "%.0f" "$((vram_per_gpu / 1024 / 6))")
+                printf "${ITALICS}${GREEN}\\nBased on available %d Mib VRAM/GPU you can run upto %d SD miners ( Incl SDXL ) on each GPU. Enter the number of SD miners per GPU (default is 1): ${NC}" "$vram_per_gpu" "$rec_num_sd_miners"
+               
                 read num_sd_miners
                 if [ -z "$num_sd_miners" ]; then
                     num_sd_miners=1
@@ -471,7 +474,7 @@ prompt_miner_config() {
                         fi)"${NC}
 
         if [ "$recommended_mining_option" = "4" ]; then
-            num_sd_miners=$((vram_per_gpu / 6))
+              num_sd_miners=$(printf "%.0f" "$((vram_per_gpu / 1024 / 6))")
         fi
 
         sleep 5
@@ -489,30 +492,50 @@ echo "${GREEN}\n✓Installing packages required for Stable Diffusion\n${NC}"
  python3 --version | awk -F'[ .]' '{if ($2 < 3 || ($2 == 3 && $3 < 9)) system("apt-get install -y python3.8-venv")}'
  apt install wget
 echo "${GREEN}✓ Packages Updated → Creating New Conda Environment${NC}"
+
+if [ ! -d "miner-release" ];  then 
 conda create --name gpu-3-11 python=3.11 -y
 echo "${GREEN}\n✓ New Conda Environment Created → Initializing Conda\n${NC}"
 
 eval "$(conda shell.posix hook)"
 echo "${GREEN}\n✓ Conda Initialized → Activating Conda Environment\n${NC}"
+else 
+    eval "$(conda shell.bash hook)"
+    echo "${GREEN}Conda environment already exists, skipping\n${NC}"
+fi
 
 conda activate /opt/conda/envs/gpu-3-11
+
 echo "${GREEN}\n✓ Conda Environment Activated → Cloning Miner-Release Repository\n${NC}"
 
-git clone https://github.com/heurist-network/miner-release
-echo "${GREEN}\n✓ Miner-Release Repository Cloned → Changing Directory\n${NC}"
+if [ ! -d "miner-release" ];  then 
+   git clone https://github.com/heurist-network/miner-release
+   echo "${GREEN}\n✓ Miner-Release Repository Cloned → Changing Directory\n${NC}"
+    
+cd miner-release/
+echo "${GREEN}\n✓ Directory Changed to Miner-Release → Creating .env File\n${NC}"
+
+else
+    cd miner-release/
+    echo "${YELLOW}\n! Miner-Release Repository already exists. Changing Directory.\n${NC}"
+fi
 
 #Find location of config.toml
 CONFIG_FILE=$(find / -type f -name "config.toml" -path "*/miner-release/*" -print -quit 2>/dev/null)
 
-cd miner-release/
-echo "${GREEN}\n✓ Directory Changed to Miner-Release → Creating .env File\n${NC}"
-
 pip install python-dotenv
-   
+  
 update_sd_miner_command
 
-touch .env
-echo "${GREEN}\n✓ .env File Created → Opening .env File for Editing\n${NC}"
+if [ -f ".env" ]; then
+    rm ".env"
+    echo "${GREEN}\n✗ .env File Removed \n${NC}"  
+fi
+
+# Create and Update .env file if it already exists
+ touch .env
+ echo "${GREEN}\n✓ .env File Created → Opening .env File for Editing\n${NC}"
+
 
 if [ "$num_gpus" -gt 1 ]; then
     case "$evm_addresses" in
@@ -536,6 +559,7 @@ else
     echo "MINER_ID_0=$evm_address" >> .env
 fi
 
+
     # Read miner IDs from .env file
 while IFS='=' read -r key value; do
     case "$key" in
@@ -548,6 +572,7 @@ done < ".env"
 
 echo "${GREEN}\n✓ .env File Updated with EVM_Address → Installing Requirements\n${NC}"
 
+
 yes | pip install -r requirements.txt
 echo "${GREEN}\n✓ Requirements Installed\n${NC}"
 
@@ -558,6 +583,7 @@ if [ -n "$num_child_process" ]; then
 fi
 echo "${GREEN}\nUpdated num_child_process and concurrency_soft_limit in .env file and num_cuda_devices in config.toml.\n${NC}"
 }
+
 
 install_llm_packages() {
 echo "${GREEN}\nInstalling Packages required for LLM Miner\n${NC}"
@@ -572,6 +598,13 @@ echo "${GREEN}\n✓ jq Installed → Installing bc\n${NC}"
 EOF
  apt install -y python3-venv
 echo "${GREEN}\n✓ Dependencies Installed for LLM Miner\n${NC}"
+
+
+rm -rf llm-miner_*log 2>/dev/null
+rm -rf sd-miner_0_*log 2>/dev/null
+
+
+
 }
 
 run_miners() {
@@ -625,7 +658,7 @@ run_miners() {
             gpu_uuid_0=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' '$1 == 0 {print substr($2, 5, 6)}')
             log_file="sd-miner_0_${miner_id_0}-${gpu_uuid_0}.log"
     
-            for i in $(seq 1 $((num_sd_miners * num_gpus))); do
+            for i in $(seq 1 $((num_sd_miners))); do
             if [ "$i" -eq 1 ]; then
                 tmux send-keys -t miner_monitor "$CONDA_ACTIVATE" C-m
                 tmux send-keys -t miner_monitor "$sd_miner_command" C-m
@@ -635,7 +668,8 @@ run_miners() {
 
                 tmux send-keys -t miner_monitor.$((i-1)) "while true; do if [ -f \"$log_file\" ]; then if grep -q '.*Default model .* loaded successfully.*' \"$log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
                 tmux send-keys -t miner_monitor.$((i-1)) "clear;echo 'Waiting for SD Miner to start in GPU 0...'" C-m
-                tmux send-keys -t miner_monitor.$((i-1)) "echo 'SD Miner started in GPU 0. Starting SD Miner $i...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "echo 'SD Miner started in GPU 0. To avoid resource contention starting SD Miner $i in 60 seconds...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "sleep 60" C-m
                 tmux send-keys -t miner_monitor.$((i-1)) "$CONDA_ACTIVATE" C-m
                 tmux send-keys -t miner_monitor.$((i-1)) "$sd_miner_command" C-m
             fi
@@ -648,12 +682,12 @@ run_miners() {
                 miner_id=$(eval echo "\$address_$i")
                 log_file="llm-miner_${miner_id}-${gpu_uuid}.log"
 if [ "$i" -eq 0 ]; then
-            tmux send-keys -t miner_monitor "$rec_llm_miner_cmd --miner-id-index $i --port 800$i --gpu-ids $i"C-m
+            tmux send-keys -t miner_monitor "$rec_llm_miner_cmd --miner-id-index $i --port 800$i --gpu-ids $i" C-m
 else
             tmux split-window -v -t miner_monitor
             tmux select-layout -t miner_monitor tiled
             prev_gpu_uuid=$(nvidia-smi --query-gpu=index,uuid --format=csv,noheader | awk -F', ' -v idx="$((i-1))" '$1 == idx {print substr($2, 5, 6)}')
-            prev_miner_id=$(eval echo "$address_$((i-1))")
+            prev_miner_id=$(eval echo "\$address_$((i-1))")
             prev_log_file="llm-miner_${prev_miner_id}-${prev_gpu_uuid}.log"
             tmux send-keys -t miner_monitor.$((i)) "while true; do if [ -f \"$prev_log_file\" ]; then if grep -q '.*LLM miner started.*' \"$prev_log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
             tmux send-keys -t miner_monitor.$((i)) "clear;echo 'Waiting for LLM to start in GPU $((i-1))...'" C-m
@@ -683,7 +717,7 @@ if [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2
             tmux send-keys -t miner_monitor.$((last_pane_index)) "$rec_sd_miner_cmd" C-m
 fi
     elif [ "$recommended_mining_option" = "4" ]; then
-        for i in $(seq 1 $((num_sd_miners * num_gpus))); do
+        for i in $(seq 1 $((rec_num_sd_miners))); do
             if [ "$i" -eq 1 ]; then
                 tmux send-keys -t miner_monitor "$CONDA_ACTIVATE" C-m
                 tmux send-keys -t miner_monitor "$rec_sd_miner_cmd" C-m
@@ -696,7 +730,8 @@ fi
 
                 tmux send-keys -t miner_monitor.$((i-1)) "while true; do if [ -f \"$log_file\" ]; then if grep -q '.*Default model .* loaded successfully.*' \"$log_file\"; then break; else sleep 1; fi; else sleep 1; fi; done" C-m
                 tmux send-keys -t miner_monitor.$((i-1)) "clear;echo 'Waiting for SD Miner to start in GPU 0...'" C-m
-                tmux send-keys -t miner_monitor.$((i-1)) "echo 'SD Miner started in GPU 0. Starting SD Miner $i...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "echo 'SD Miner started in GPU 0. To avoid resource contention starting SD Miner $i in 60 seconds...'" C-m
+                tmux send-keys -t miner_monitor.$((i-1)) "sleep 60" C-m
                 tmux send-keys -t miner_monitor.$((i-1)) "$CONDA_ACTIVATE" C-m
                 tmux send-keys -t miner_monitor.$((i-1)) "$rec_sd_miner_cmd" C-m
             fi
@@ -743,6 +778,7 @@ prompt_miner_config
 install_stable_diffusion_packages
 
 #Install LLM Packages if selected
+
 if [ "$miner_choice" = "1" ] || [ "$miner_choice" = "2" ] || [ "$miner_choice" = "3" ] || [ "$recommended_mining_option" = "1" ] || [ "$recommended_mining_option" = "2" ] || [ "$recommended_mining_option" = "3" ]; then
     install_llm_packages
 fi
