@@ -60,7 +60,7 @@ The script currently does not recommend modifying these parameters
 * If the script fails to detect the number of GPUs or VRAM correctly, ensure that the NVIDIA driver is properly installed and accessible.
 * If the script encounters any errors during the installation or setup process, review the error messages and ensure that the system meets the prerequisites.
 
-**sh miner.sh**
+**sh setup.sh**
 ![1w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/23a7c119-48f4-45e8-be21-90c5c7db9a60)
 
 ![3w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/452602f1-4ad4-47d5-a762-26a4d66cacce)
