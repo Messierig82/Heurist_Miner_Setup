@@ -1,5 +1,5 @@
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import re
 import sys 
@@ -135,6 +135,11 @@ def calculate_sd_metrics(log_file, model_type, gpu_id):
 
     percentage_near_avg = calculate_percentage_near_average(completion_times, avg_time_per_request)
 
+    # Calculate requests processed in the last hour
+    one_hour_ago = datetime.now() - timedelta(hours=1)
+    recent_requests = [time for time in re.findall(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3} - root - INFO - Request ID', log_content) if datetime.strptime(time, '%Y-%m-%d %H:%M:%S') > one_hour_ago]
+    num_requests_last_hour = len(recent_requests)
+
     pattern = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - root - INFO - Request ID (\S+) completed"
     matches = re.findall(pattern, log_content)
 
@@ -155,7 +160,7 @@ def calculate_sd_metrics(log_file, model_type, gpu_id):
         f"{percentage_near_avg:.2f}%",
         f"{avg_loading_time:.2f}" if avg_loading_time else "-",
         f"{avg_inference_time:.2f}",
-        f"{avg_submit_time:.2f}",
+        f"{num_requests_last_hour:.2f}",
         time_since_last_request
     ]
 
@@ -206,7 +211,7 @@ print("Analyzing mining log files...\n")
 
 # Process LLM and SD logs separately and create different headers for each
 llm_headers = ["IP Addr","GPU Model", "Hours (n)", "Requests (n)", "Avg Time/Req", "Avg Req %", "Avg Tokens/Req"]
-sd_headers = ["GPU Model", "Hours (n)", "Requests (n)", "Avg Time/Req", "Avg Req %", "Avg Loading Time", "Avg Inference Time", "Avg Submit Time", "Last Req Processed"]
+sd_headers = ["GPU Model", "Hours (n)", "Requests (n)", "Avg Time/Req", "Avg Req %", "Avg Loading Time", "Avg Inference Time", "Requests/Last Hour", "Last Req Processed"]
 
 llm_metrics_data = []
 sd_metrics_data = []
