@@ -61,13 +61,18 @@ The script currently does not recommend modifying these parameters
 * If the script encounters any errors during the installation or setup process, review the error messages and ensure that the system meets the prerequisites.
 
 **sh miner.sh**
-![1](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/5c59ff99-9e15-407f-9ff8-ca741783afb8)
+![1w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/23a7c119-48f4-45e8-be21-90c5c7db9a60)
 
-**Manual setup**
-![2](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/0499ae0d-9f09-4531-9205-78a6fa9ceeb0)
+![3w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/452602f1-4ad4-47d5-a762-26a4d66cacce)
+
+![4w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/0c271ba9-aecc-4990-bc49-f0b7c652afd8)
 
 **System Recommended**
-![4](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/501c0da2-36d0-4fab-b71e-7f375e4255ba)
+![2w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/a65bd637-6ed2-41b3-91b6-9f63aa943c48)
+
+**Manual setup**
+![3w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/c2e231a9-f9bd-4b4c-b1c8-a3594a660568)
+![4w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/9a420a49-bf20-4653-b5e9-d477032e3798)
 
 **TMUX pane 1 executing LLM miner while pane 2 & 3 wait for LLM to start**
 ![5](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/d2d85237-bb87-4712-9792-22c7bee19d79)
