@@ -7,6 +7,7 @@ gpu_model=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[0;33m'
+RED='\033[0;31m'  # Red Color
 NC='\033[0m' # No Color
 
 # Define box drawing characters
@@ -50,6 +51,16 @@ print_horizontal_line()
 }
 
 
+#Function to print a horizontal line for the main table
+print_horizontal_line_llm() 
+{
+    printf "%s%s%s%s%s%s%s\n" "$TOP_LEFT_CORNER" "${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}" "$TOP_RIGHT_CORNER"
+}
+
+print_horizontal_line_sd() 
+{
+    printf "%s%s%s%s%s%s%s\n" "$TOP_LEFT_CORNER" "${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}""${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}" "${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}" "${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}${HORIZONTAL_LINE}" "$TOP_RIGHT_CORNER"
+}
     generate_ascii_art() {
    echo "${BLUE}"
     local text="$1"
@@ -101,6 +112,27 @@ local llm_model="$2"
 local sd_model="$3"
 local rewards="$4"
 printf "%s %-2s %s %-35s %s %-20s %s %-26s %s${NC}\n" "$VERTICAL_LINE" "$id" "$VERTICAL_LINE" "$llm_model" "$VERTICAL_LINE" "$sd_model" "$VERTICAL_LINE" "$rewards" "$VERTICAL_LINE"
+}
+
+print_man_llm_table() {
+local id="$1"
+local llm_model="$2"
+local required_vram="$3"
+#printf "%s %-2s %s %-45s %s %-5s %s${NC}\n" "$VERTICAL_LINE" "$id" "$VERTICAL_LINE" "$llm_model" "$VERTICAL_LINE" "$required_vram" "$VERTICAL_LINE"
+    # Check if required VRAM exceeds available VRAM
+    if awk -v req="$required_vram" -v avail="$vram_per_gpu" 'BEGIN {exit !(req > avail)}'; then
+        # Print in red if requirement exceeds availability
+        printf "${RED}%s %-2s %s %-45s %s %-5s %s${NC}\n" "$VERTICAL_LINE" "$id" "$VERTICAL_LINE" "$llm_model" "$VERTICAL_LINE" "$required_vram" "$VERTICAL_LINE"
+    else
+        # Print normally if within limits
+        printf "%s %-2s %s %-45s %s %-5s %s${NC}\n" "$VERTICAL_LINE" "$id" "$VERTICAL_LINE" "$llm_model" "$VERTICAL_LINE" "$required_vram" "$VERTICAL_LINE"
+    fi
+}
+
+print_man_sd_table() {
+local id="$1"
+local sd_model="$2"
+printf "%s %-2s %s %-150s %s${NC}\n" "$VERTICAL_LINE" "$id" "$VERTICAL_LINE" "$sd_model" "$VERTICAL_LINE" 
 }
 
 extract_models() {
@@ -200,7 +232,7 @@ EOF
         echo "${BLUE}Based on available VRAM, recommended miner setup for Llama & Waifu points are:${NC}"
         echo ""
         print_horizontal_line
-        printf "${BLUE}%s %-2s %s %-35s %s %-20s %s %-26s %s${NC}\n" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "LLM Model" "$VERTICAL_LINE" "      SD Model" "$VERTICAL_LINE" "        Rewards " "$VERTICAL_LINE"
+        printf "${BLUE}%s %-2s %s %-35s %s %-20s %s %-26s %s${NC}\n" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "LLM Model" "$VERTICAL_LINE" "      SD Model" "$VERTICAL_LINE" "        Rewards        " "$VERTICAL_LINE"
         echo "${NC}"
         print_horizontal_line
         print_rec_table "1" "$max_llm_model" "$max_sd_model" "    Llama & Waifu ( 🦙 🧚 )  "
@@ -292,7 +324,7 @@ set_man_llm_command()
             esac
 }
 
-select_choice(){
+miner_setup_choice(){
 printf "\n${GREEN}Press 'Y' to continue with the recommended miner setup, Press 'N' to choose setup manually:${NC} "
 read user_choice
 if [ "$user_choice" = "y" ] || [ "$user_choice" = "Y" ]; then
@@ -325,41 +357,67 @@ EOF
             exit 1
             ;;
     esac
-    echo "The following commands will be executed:"
+    echo "\n${GREEN}The following commands will be executed:\n"
     echo "LLM Miner Command: $rec_llm_miner_cmd"
-    echo "SD Miner Command: $rec_sd_miner_cmd"
+    echo "SD Miner Command will be updated in subsequent steps\n"
+    if [ "$num_gpus" -gt 1 ]; then
+        echo "Updating num_child_process to 20, concurrency_soft_limit to 30, NUM_CUDA_DEVICES to $num_gpus"
+    else
+        echo "Updating num_child_process to 20 and concurrency_soft_limit to 30"
+    fi
+    sleep 5
+    echo "${NC}"
 
 elif [ "$user_choice" = "n" ] || [ "$user_choice" = "N" ]; then
-    echo "\n${GREEN}Choose Models to mine:\n${NC}"
-    echo "1) ⛏️ Large Language Model + Stable DIffusion"
-    echo "2) ⛏️ Large Language Model only"
-    echo "3) ⛏️ Stable Diffusion only"
+     echo "\n${GREEN}Choose Models to mine: ( 1/2/3 ) \n${NC}"
+     print_horizontal_line_llm
+     printf "${BLUE}%s %-2s %s %-35s %s ${NC}" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "   Mining Models" 
+     echo "${NC}"
+     print_horizontal_line_llm
+     #print_rec_table "4" "$max_llm_model" "$max_sd_model" "    Llama & Waifu ( 🦙 🧚 )  "
+
+    echo "  1  │   ⛏️ Large Language Model + Stable DIffusion"
+    echo "\n  2  │   ⛏️ Large Language Model only"
+    echo "\n  3  │   ⛏️ Stable Diffusion only"
+    print_horizontal_line_llm
 
     printf "\n${GREEN}Enter your choice: ${NC}"
     read manual_miner_choice
 
     case $manual_miner_choice in
         1)
-            echo "\n${GREEN}Heurist Stable Diffusion Model: ( 🧚‍♀️ )\n${NC}"
-            echo "1) ⛏️ Stable Diffusion excl SDXL ($sd_models_excl_sdxl)"
-            echo "   Required VRAM (SD) in GB: $sd_excl_sdxl_vram"
-            echo ""
-            echo "2) ⛏️ Stable Diffusion incl SDXL ($sd_models_incl_sdxl)"
-            echo "   Required VRAM (SD) in GB: $sd_incl_sdxl_vram"
-            echo ""
-
-            echo "\n${GREEN}Heurist LLM Model ID: ( 🦙 ) \n${NC}"
+            echo "\n${GREEN}Available Large Language Models: ( 🦙 )\n${NC}"
+            echo "${GREEN}Select LLM Model ID followed by SD Miner options:\n${NC}"
+            print_horizontal_line_llm
+            printf "${BLUE}%s %-2s %s %-40s %s %-5s %s${NC}" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "LLM Mining Models" "$VERTICAL_LINE" "Required VRAM  " "$VERTICAL_LINE"
+            echo "${NC}"
+            print_horizontal_line_llm
             i=1
             while IFS= read -r model_vram; do
                 model=$(echo "$model_vram" | cut -d',' -f1)
                 vram=$(echo "$model_vram" | cut -d',' -f2)
-                echo "$i) ⛏️ $model"
-                echo "   Required VRAM (LLM) in GB: $vram"
-                echo ""
+                print_man_llm_table "$i " "⛏️ $model" "$vram GB          "
+                 echo "\n"
                 i=$((i + 1))
             done <<EOF
 $llm_models_vrams
 EOF
+            print_horizontal_line_llm
+            printf "\n${GREEN}Choose Heurist LLM Model ID ( 🦙 ) :  ${NC}"
+            read manual_llm_choice
+
+            echo "\n${GREEN}Available Stable Diffusion Models: ( 🧚‍♀️ )\n${NC}"
+            print_horizontal_line_sd
+            printf "${BLUE}%s %-2s %s %-150s %s${NC}" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "Stable Diffusion Mining Models & Required VRAM                                                                                        |" 
+            echo "${NC}"
+            print_horizontal_line_sd
+            print_man_sd_table "1 " "⛏️ SD excl SDXL ($sd_models_excl_sdxl)
+                 -- Required VRAM (SD) in GB: $sd_excl_sdxl_vram                                                                                   " 
+            echo ""
+            print_man_sd_table "2 " "⛏️ SD incl SDXL ($sd_models_incl_sdxl)
+                 -- Required VRAM (SD) in GB: $sd_incl_sdxl_vram                                                                                   " 
+            print_horizontal_line_sd
+            echo ""
 
             printf "${GREEN}Enter Stable Diffusion Model ID: ${NC}"
             read manual_sd_choice
@@ -380,9 +438,7 @@ EOF
                     ;;
             esac
 
-            printf "\n${GREEN}Enter LLM Model ID: ${NC}"
-            read manual_llm_choice
-
+            
             #set manual llm command values
             set_man_llm_command
 
@@ -392,20 +448,29 @@ EOF
             ;;
 
         2)
-            echo "\n${GREEN}Heurist LLM Model ID:\n${NC}"
+            echo "\n${GREEN}Available Large Language Models: ( 🦙 )\n${NC}"
+            #echo "\n${GREEN}Heurist LLM Models:\n${NC}"
+            print_horizontal_line_llm
+            #printf "${BLUE}%s %-2s %s %-35s %s ${NC}\n" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "LLM Mining Models" "$VERTICAL_LINE" "Required VRAM " 
+            printf "${BLUE}%s %-2s %s %-40s %s %-5s %s${NC}" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "LLM Mining Models" "$VERTICAL_LINE" "Required VRAM  " "$VERTICAL_LINE"
+            echo "${NC}"
+            print_horizontal_line_llm
+
             i=1
             while IFS= read -r model_vram; do
                 model=$(echo "$model_vram" | cut -d',' -f1)
                 vram=$(echo "$model_vram" | cut -d',' -f2)
-                echo "$i) $model"
-                echo "   Required VRAM (LLM) in GB: $vram"
-                echo ""
+                #echo "$i) $model"
+                #echo "   Required VRAM (LLM) in GB: $vram"
+                #echo ""
+                print_man_llm_table "$i " "⛏️ $model" "$vram GB          "
+                 echo "\n"
                 i=$((i + 1))
             done <<EOF
 $llm_models_vrams
 EOF
 
-            printf "\n${GREEN}Enter LLM Model ID:${NC} "
+            printf "\n${GREEN}Enter Heurist LLM Model ID  ( 🦙 ):${NC} "
             read manual_llm_choice
 
             #set manual llm command values
@@ -416,12 +481,17 @@ EOF
             ;;
 
         3)
-            echo "${GREEN}Heurist Stable Diffusion Model:\n${NC}"
-            echo "1) Stable Diffusion excl SDXL ($sd_models_excl_sdxl)"
-            echo "   Required VRAM (SD) in GB: $sd_excl_sdxl_vram"
+            echo "\n${GREEN}Heurist Stable Diffusion Model:\n${NC}"
+            print_horizontal_line_sd
+            printf "${BLUE}%s %-2s %s %-150s %s${NC}" "$VERTICAL_LINE" "ID" "$VERTICAL_LINE" "Stable Diffusion Mining Models & Required VRAM" 
+            echo "${NC}"
+            print_horizontal_line_sd
+            print_man_sd_table "1 " "⛏️ SD excl SDXL ($sd_models_excl_sdxl)
+                 -- Required VRAM (SD) in GB: $sd_excl_sdxl_vram                                                                                   " 
             echo ""
-            echo "2) Stable Diffusion incl SDXL ($sd_models_incl_sdxl)"
-            echo "   Required VRAM (SD) in GB: $sd_incl_sdxl_vram"
+            print_man_sd_table "2 " "⛏️ SD incl SDXL ($sd_models_incl_sdxl)
+                 -- Required VRAM (SD) in GB: $sd_incl_sdxl_vram                                                                                   " 
+            print_horizontal_line_sd
             echo ""
 
             printf "Enter Stable Diffusion Model ID: "
@@ -479,8 +549,8 @@ prompt_evm_addresses() {
     echo "${NC}"
     echo "${BLUE}"
     echo "${NC}"
-    
-        printf "${BLUE}\\nYour instance has %s with %d GPUs.\\n${NC}" "$gpu_model" "$num_gpus"
+        generate_ascii_art
+        printf "${BLUE}\\nDetected %s with %d GPUs.\\n${NC}" "$gpu_model" "$num_gpus"
         printf "${BLUE}Your System Configuration is:\\n${NC}"
         print_gpu_table "$gpu_model" "$num_gpus" "$vram_info"
     
@@ -883,16 +953,14 @@ if ! grep -q "alias monitor='tmux attach-session -t miner_monitor'" ~/.bashrc; t
     echo "alias monitor='tmux attach-session -t miner_monitor'" >> ~/.bashrc
 
 fi
-
 }
 
-
-generate_ascii_art
+#Call functions
 detect_gpus
 extract_models
 prompt_evm_addresses
 recommend_models
-select_choice
+miner_setup_choice
 prompt_config
 install_stable_diffusion_packages
 install_llm_packages
