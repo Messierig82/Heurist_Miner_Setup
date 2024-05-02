@@ -105,10 +105,9 @@ def calculate_sd_metrics(log_file, model_type, gpu_id):
     
     loading_time_pattern = re.compile(r'Loading.*?(\d+\.\d+|\d+)')
     loading_times = [float(match) for match in re.findall(loading_time_pattern, log_content)]
-    avg_loading_time = round(sum(loading_times) / len(loading_times),2) if loading_times else None
+    avg_loading_time = round(sum(loading_times) / len(loading_times), 2) if loading_times else None
 
     inference_times = [float(x) for x in re.findall(r'Inference: (\d+\.\d+)', log_content)]
-    upload_times = [float(x) for x in re.findall(r'Upload: (\d+\.\d+)', log_content)]
     submit_times = [float(x) for x in re.findall(r'Submit: (\d+\.\d+)', log_content)]
 
     avg_time_per_request = sum(completion_times) / len(completion_times) if completion_times else 0
@@ -116,7 +115,6 @@ def calculate_sd_metrics(log_file, model_type, gpu_id):
     min_time_per_request = min(completion_times) if completion_times else 0
    
     avg_inference_time = sum(inference_times) / len(inference_times) if inference_times else 0
-    avg_upload_time = sum(upload_times) / len(upload_times) if upload_times else 0
     avg_submit_time = sum(submit_times) / len(submit_times) if submit_times else 0
 
     start_time_match = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}', log_content)
@@ -137,8 +135,19 @@ def calculate_sd_metrics(log_file, model_type, gpu_id):
 
     percentage_near_avg = calculate_percentage_near_average(completion_times, avg_time_per_request)
 
+    pattern = r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - root - INFO - Request ID (\S+) completed"
+    matches = re.findall(pattern, log_content)
+
+    # Parse datetime from the first match (most recent completion)
+    if matches:
+        last_request_time = datetime.strptime(matches[-1][0], '%Y-%m-%d %H:%M:%S,%f')
+        current_time = datetime.now()
+        time_since_last_request = current_time - last_request_time
+    else:
+        time_since_last_request = "-"
+
     return [
-        public_ip,
+        
         f"{GPU_MODEL} ({gpu_id})",
         f"{hours_active:.2f}",
         str(total_requests),
@@ -146,9 +155,9 @@ def calculate_sd_metrics(log_file, model_type, gpu_id):
         f"{percentage_near_avg:.2f}%",
         f"{avg_loading_time:.2f}" if avg_loading_time else "-",
         f"{avg_inference_time:.2f}",
-        f"{avg_upload_time:.2f}"
+        f"{avg_submit_time:.2f}",
+        time_since_last_request
     ]
-
 
 # Get GPU model and number of GPUs using nvidia-smi
 try:
@@ -197,7 +206,7 @@ print("Analyzing mining log files...\n")
 
 # Process LLM and SD logs separately and create different headers for each
 llm_headers = ["IP Addr","GPU Model", "Hours (n)", "Requests (n)", "Avg Time/Req", "Avg Req %", "Avg Tokens/Req"]
-sd_headers = ["IP Addr","GPU Model", "Hours (n)", "Requests (n)", "Avg Time/Req", "Avg Req %", "Avg Loading Time", "Avg Inference Time", "Avg Upload Time"]
+sd_headers = ["GPU Model", "Hours (n)", "Requests (n)", "Avg Time/Req", "Avg Req %", "Avg Loading Time", "Avg Inference Time", "Avg Submit Time", "Last Req Processed"]
 
 llm_metrics_data = []
 sd_metrics_data = []
