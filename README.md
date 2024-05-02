@@ -63,10 +63,6 @@ The script currently does not recommend modifying these parameters
 **sh setup.sh**
 ![1w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/23a7c119-48f4-45e8-be21-90c5c7db9a60)
 
-![3w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/452602f1-4ad4-47d5-a762-26a4d66cacce)
-
-![4w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/0c271ba9-aecc-4990-bc49-f0b7c652afd8)
-
 **System Recommended**
 ![2w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/a65bd637-6ed2-41b3-91b6-9f63aa943c48)
 
