@@ -28,18 +28,19 @@ Note: Recommended choices in the script are based on vram requirements from LLM_
 * tmux installed (for running miners in separate sessions)
 
 **Usage**
-1. Clone the repository or download the script file.
-2. Make the script executable by running chmod +x miner.sh .
-3. Run the script using ./setup.sh or sh setup.sh .
+1. Clone the repository using git clone https://github.com/Messierig82/Heurist_Miner_Setup or download the script file.
+2. Make the script executable by running chmod +x miner.sh . ( optional )
+3. Run the script using sh setup.sh or using ./setup.sh  (latter format requires step 2 to be executed)
 4. Enter the EVM address(es) for the miner(s). For multiple GPUs, provide a single address for all GPUs or distinct addresses separated by a comma.
 5. Follow the prompts and provide the required inputs:
     * Press 'Y' to continue with the recommended miner setup or 'N' to choose the setup manually.
-    * If you choose to proceed with the recommended miner setup, you only need to enter EVM addresses and the script will take care of the rest of the processes.
+    * If you choose to proceed with the recommended miner setup, you only need to enter EVM addresses and the script will take care of 
+      the rest of the processes.
     * If choosing the setup manually:
         * Select the desired miners to run (LLM + SD, LLM only, or SD only).
         * Choose the LLM model (if applicable).
         * Enter the number of child processes (press Enter to use the default value).
-6. The script will install the necessary packages and configure the mining environment based on the selected options.
+6. Script will install the necessary packages and configure the mining environment based on the selected options.
 7. .env file will be updated with the provided EVM addresses in the format MINER_ID_<index>=<address>.
 8. If the system has multiple GPUs, the config.toml file will be updated with the num_cuda_devices parameter set to the number of GPUs detected.
 9. Once the setup is complete, the script will start the miners in separate tmux sessions.
