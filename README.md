@@ -8,7 +8,7 @@ This script is designed to automate the setup and configuration of LLM (Language
 * Retrieves available models https://raw.githubusercontent.com/heurist-network/heurist-models/main/models.json
 * Recommends mining setups which are currently receiving Llama & Waifu rewards.
 * Configures the mining environment by installing the required packages and dependencies.
-* Updates the .env file with the provided EVM addresses in the required format.
+* Updates .env file with the provided EVM addresses in the required format.
 * Modifies the config.toml file with the num_cuda_devices parameter based on the number of GPUs detected.
 * If proceeding with recommended choice, num_child_process and concurrency_soft_limit is auto updated to num_child_process+10 in    
   config.toml.
