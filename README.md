@@ -5,13 +5,16 @@ This script is designed to automate the setup and configuration of LLM (Language
 **Features**
 * Recommends the optimal mining setup based on the system configuration.
 * Allows users to choose between recommended or manual setup.
-* Supports 4 LLM models and 2 SD models ( with and without SDXL ) with different reward multipliers.
+* Retrieves available models https://raw.githubusercontent.com/heurist-network/heurist-models/main/models.json
+* Recommends mining setups which are currently receiving Llama & Waifu rewards.
 * Configures the mining environment by installing the required packages and dependencies.
 * Updates the .env file with the provided EVM addresses in the required format.
 * Modifies the config.toml file with the num_cuda_devices parameter based on the number of GPUs detected.
-* Ability to update num_child_process, concurrency_soft_limit is auto updated to num_child_process+10 in config.toml.
+* If proceeding with recommended choice, num_child_process and concurrency_soft_limit is auto updated to num_child_process+10 in    
+  config.toml.
 * Starts the miners in separate tmux panes within a single window for easy monitoring and management.
 * When both LLM and SD models are selected, each GPU's LLM Model will wait for LLM mining to start on the previous GPU (Current GPU - 1), after which SD mining will begin once all LLM miners are running. ( To avoid failures for LLM mining )
+* When only SD mining is selected, subsequent SD miners will execute once the download is complete on tmux pane 1
 * Waiting for subsequent TMUX panes is achieved via referring the generated log files from LLM miners.
 * Update .tmux.conf with alias to monitor tmux sessions 
 * Update bashrc file to enable vi mode & mouse scroll mode in TMUX sessions.
@@ -27,21 +30,22 @@ Note: Recommended choices in the script are based on vram requirements from LLM_
 **Usage**
 1. Clone the repository or download the script file.
 2. Make the script executable by running chmod +x miner.sh .
-3. Run the script using ./miner.sh or sh miner.sh .
-4. Follow the prompts and provide the required inputs:
+3. Run the script using ./setup.sh or sh setup.sh .
+4. Enter the EVM address(es) for the miner(s). For multiple GPUs, provide a single address for all GPUs or distinct addresses separated by a comma.
+5. Follow the prompts and provide the required inputs:
     * Press 'Y' to continue with the recommended miner setup or 'N' to choose the setup manually.
     * If you choose to proceed with the recommended miner setup, you only need to enter EVM addresses and the script will take care of the rest of the processes.
     * If choosing the setup manually:
         * Select the desired miners to run (LLM + SD, LLM only, or SD only).
         * Choose the LLM model (if applicable).
         * Enter the number of child processes (press Enter to use the default value).
-    * Enter the EVM address(es) for the miner(s). For multiple GPUs, provide a single address for all GPUs or distinct addresses separated by a comma.
-5. If proceeding manually and you are unsure which model to select, the script will recommend choices based on system configuration.
 6. The script will install the necessary packages and configure the mining environment based on the selected options.
-7. The .env file will be updated with the provided EVM addresses in the format MINER_ID_<index>=<address>.
+7. .env file will be updated with the provided EVM addresses in the format MINER_ID_<index>=<address>.
 8. If the system has multiple GPUs, the config.toml file will be updated with the num_cuda_devices parameter set to the number of GPUs detected.
 9. Once the setup is complete, the script will start the miners in separate tmux sessions.
 10. To monitor the miners, use the "monitor" alias.
+11. Support for Multi SD Miners on a GPU is now added, you can run upto 3 SD Miners incl SDXL on a 24 GB VRAM.
+12. Includes log_analyzer.py which will extract data from your log files.
 
 **TMUX Navigation**
 1. Use Ctrl+b followed by arrow keys to move between different TMUX panes
@@ -53,8 +57,7 @@ Note: Recommended choices in the script are based on vram requirements from LLM_
 
 **Variables**
 The script currently does not recommend modifying these parameters
-* openhermes-2-yi-34b-gptq_active_ind: Currently set to n, you can still select this, it will not come up in recommended setup
-* Llama_ratio and SD_ratio: The point weightage for Llama and Waifu models. Currently set at 70:30 , this is just used to recommend models based on your configuration giving weightage to Llama points than waifu points. Nobody knows what the multiplier is.
+* Llama_ratio and SD_ratio: The point weightage for Llama and Waifu models. Currently set at 75:25 , this is just used to recommend models based on your configuration giving weightage to Llama points than waifu points. Nobody knows what the multiplier is.
 
 **Troubleshooting**
 * If the script fails to detect the number of GPUs or VRAM correctly, ensure that the NVIDIA driver is properly installed and accessible.
@@ -78,6 +81,10 @@ The script currently does not recommend modifying these parameters
 
 **SD miner Pane 3 Starts once it finds the keyword LLM Miner started on Tmux pane 2**
 ![7](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/18102a74-0a8b-47cd-8250-99918302189a)
+
+**Optional run python3 log_analyzer.py to analyze your log files**
+![8w](https://github.com/Messierig82/Heurist_Miner_Setup/assets/106718401/0e80957e-db57-47cb-89cd-50177ab749a9)
+
 
 
 
